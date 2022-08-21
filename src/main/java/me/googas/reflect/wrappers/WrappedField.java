@@ -1,9 +1,11 @@
 package me.googas.reflect.wrappers;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Objects;
 import java.util.StringJoiner;
 import lombok.NonNull;
+import me.googas.reflect.modifiers.Modifier;
 
 /** This class wraps a {@link Field} to set or get the declaration. */
 public final class WrappedField<O> extends LangWrapper<Field> {
@@ -73,9 +75,21 @@ public final class WrappedField<O> extends LangWrapper<Field> {
   public O get(Object instance) throws IllegalAccessException {
     O other = null;
     if (this.reference != null && this.fieldType != null) {
-      other = this.fieldType.cast(this.reference.get(instance));
+      other = this.fieldType.cast(this.getRaw(reference));
     }
     return other;
+  }
+
+  /**
+   * Get the value that is stored in the field for the parameter object.
+   *
+   * @param instance the object to get the value of the field from
+   * @return the object from the field
+   * @throws IllegalAccessException if this Field object is enforcing Java language access control
+   *     and the underlying field is either inaccessible or final.
+   */
+  public Object getRaw(Object instance) throws IllegalAccessException {
+    return this.reference.get(instance);
   }
 
   /**
@@ -93,6 +107,25 @@ public final class WrappedField<O> extends LangWrapper<Field> {
     if (this.reference != null) {
       this.reference.set(object, value);
       set = true;
+    }
+    return set;
+  }
+
+  /**
+   * Set the value of the field using a modifier.
+   *
+   * @param object the object to set the value of the field to
+   * @param modifier the modifier which will change the value of the field
+   * @return true if the value has been changed
+   * @throws InvocationTargetException if the modification fails
+   * @throws IllegalAccessException if this Field object is enforcing Java language access control
+   *     and the underlying field is either inaccessible or final.
+   */
+  public boolean set(@NonNull Object object, @NonNull Modifier modifier)
+      throws InvocationTargetException, IllegalAccessException {
+    boolean set = false;
+    if (this.reference != null) {
+      set = modifier.modify(this, object);
     }
     return set;
   }

@@ -86,7 +86,7 @@ public final class ReflectUtil {
     if (paramTypes == null || params == null) return true;
     if (paramTypes.length != params.length) return false;
     for (int i = 0; i < paramTypes.length; i++) {
-      if (params[i].isAssignableFrom(paramTypes[i])) return false;
+      if (!params[i].isAssignableFrom(paramTypes[i])) return false;
     }
     return true;
   }
