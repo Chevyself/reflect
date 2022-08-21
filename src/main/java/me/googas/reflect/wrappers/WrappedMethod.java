@@ -74,8 +74,8 @@ public final class WrappedMethod<T> extends LangWrapper<Method> {
   public T prepare(Object object, Object... params)
       throws InvocationTargetException, IllegalAccessException {
     T obj = null;
-    if (this.reference != null) {
-      Object invoke = this.reference.invoke(object, params);
+    if (this.handle != null) {
+      Object invoke = this.handle.invoke(object, params);
       if (invoke != null && returnType != null) {
         obj = returnType.cast(invoke);
       }
@@ -96,8 +96,8 @@ public final class WrappedMethod<T> extends LangWrapper<Method> {
    */
   public Object invoke(Object object, Object... params)
       throws InvocationTargetException, IllegalAccessException {
-    if (this.reference != null) {
-      return this.reference.invoke(object, params);
+    if (this.handle != null) {
+      return this.handle.invoke(object, params);
     }
     return null;
   }
@@ -118,13 +118,13 @@ public final class WrappedMethod<T> extends LangWrapper<Method> {
    * @return the wrapped method instance
    */
   public Method getMethod() {
-    return this.reference;
+    return this.handle;
   }
 
   @Override
   public String toString() {
     return new StringJoiner(", ", WrappedMethod.class.getSimpleName() + "[", "]")
-        .add("reference=" + reference)
+        .add("reference=" + handle)
         .add("returnType=" + returnType)
         .toString();
   }

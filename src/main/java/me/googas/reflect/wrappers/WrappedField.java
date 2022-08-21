@@ -57,8 +57,8 @@ public final class WrappedField<O> extends LangWrapper<Field> {
    */
   public Object provide(@NonNull Object obj) throws IllegalAccessException {
     Object other = null;
-    if (this.reference != null) {
-      other = this.reference.get(obj);
+    if (this.handle != null) {
+      other = this.handle.get(obj);
     }
     return other;
   }
@@ -74,22 +74,10 @@ public final class WrappedField<O> extends LangWrapper<Field> {
    */
   public O get(Object instance) throws IllegalAccessException {
     O other = null;
-    if (this.reference != null && this.fieldType != null) {
-      other = this.fieldType.cast(this.getRaw(reference));
+    if (this.handle != null && this.fieldType != null) {
+      other = this.fieldType.cast(this.provide(handle));
     }
     return other;
-  }
-
-  /**
-   * Get the value that is stored in the field for the parameter object.
-   *
-   * @param instance the object to get the value of the field from
-   * @return the object from the field
-   * @throws IllegalAccessException if this Field object is enforcing Java language access control
-   *     and the underlying field is either inaccessible or final.
-   */
-  public Object getRaw(Object instance) throws IllegalAccessException {
-    return this.reference.get(instance);
   }
 
   /**
@@ -104,8 +92,8 @@ public final class WrappedField<O> extends LangWrapper<Field> {
   @NonNull
   public boolean set(@NonNull Object object, Object value) throws IllegalAccessException {
     boolean set = false;
-    if (this.reference != null) {
-      this.reference.set(object, value);
+    if (this.handle != null) {
+      this.handle.set(object, value);
       set = true;
     }
     return set;
@@ -124,7 +112,7 @@ public final class WrappedField<O> extends LangWrapper<Field> {
   public boolean set(@NonNull Object object, @NonNull Modifier modifier)
       throws InvocationTargetException, IllegalAccessException {
     boolean set = false;
-    if (this.reference != null) {
+    if (this.handle != null) {
       set = modifier.modify(this, object);
     }
     return set;
@@ -136,13 +124,13 @@ public final class WrappedField<O> extends LangWrapper<Field> {
    * @return the wrapped field if present else null
    */
   public Field getField() {
-    return reference;
+    return handle;
   }
 
   @Override
   public String toString() {
     return new StringJoiner(", ", WrappedField.class.getSimpleName() + "[", "]")
-        .add("field=" + reference)
+        .add("field=" + handle)
         .toString();
   }
 
@@ -151,11 +139,11 @@ public final class WrappedField<O> extends LangWrapper<Field> {
     if (this == o) return true;
     if (o == null || this.getClass() != o.getClass()) return false;
     WrappedField<?> that = (WrappedField<?>) o;
-    return Objects.equals(reference, that.reference);
+    return Objects.equals(handle, that.handle);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(reference);
+    return Objects.hash(handle);
   }
 }

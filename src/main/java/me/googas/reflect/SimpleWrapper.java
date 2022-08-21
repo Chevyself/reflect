@@ -7,6 +7,7 @@ import lombok.NonNull;
 /**
  * An implementation for wrapper.
  *
+ * @deprecated use {@link AbstractWrapper}
  * @param <T> the type of object that his wrapper holds
  */
 public abstract class SimpleWrapper<T> implements Wrapper<T> {
@@ -20,6 +21,11 @@ public abstract class SimpleWrapper<T> implements Wrapper<T> {
    */
   public SimpleWrapper(T reference) {
     this.reference = reference;
+  }
+
+  @Override
+  public T getHandle() {
+    return reference;
   }
 
   @Override

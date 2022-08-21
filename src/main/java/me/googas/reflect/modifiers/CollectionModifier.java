@@ -3,18 +3,23 @@ package me.googas.reflect.modifiers;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.NonNull;
+import me.googas.reflect.Wrapper;
 import me.googas.reflect.wrappers.WrappedClass;
 import me.googas.reflect.wrappers.WrappedField;
 import me.googas.reflect.wrappers.WrappedMethod;
 
 /** This modifier allows to change collections values in fields. */
-@SuppressWarnings("rawtypes")
 public abstract class CollectionModifier implements Modifier {
 
-  @NonNull private static final WrappedClass<Collection> CLAZZ = WrappedClass.of(Collection.class);
+  @SuppressWarnings("rawtypes")
+  @NonNull
+  private static final WrappedClass<Collection> CLAZZ = WrappedClass.of(Collection.class);
 
-  @NonNull private static final WrappedClass<List> LIST_CLAZZ = WrappedClass.of(List.class);
+  @SuppressWarnings("rawtypes")
+  @NonNull
+  private static final WrappedClass<List> LIST_CLAZZ = WrappedClass.of(List.class);
 
   @NonNull
   private static final WrappedMethod<Boolean> ADD =
@@ -40,14 +45,53 @@ public abstract class CollectionModifier implements Modifier {
   }
 
   /**
-   * Allows to use {@link Collection#add(Object)}.
+   * Allows to use {@link Collection#addAll(Collection)}. This will unwrap the wrappers
+   *
+   * @param collection the collection to be added
+   * @return the modifier to add all
+   */
+  @NonNull
+  public static CollectionModifier addWrappers(
+      @NonNull Collection<? extends Wrapper<?>> collection) {
+    return new AddAll(
+        collection.stream()
+            .filter(Wrapper::isPresent)
+            .map(Wrapper::getHandle)
+            .collect(Collectors.toList()));
+  }
+
+  /**
+   * Allows to use {@link Collection#add(Object)}. This will unwrap the wrapper
    *
    * @param obj the object to be added
    * @return the modifier to add the object
    */
   @NonNull
-  public static CollectionModifier add(@NonNull Object obj) {
+  public static CollectionModifier add(Object obj) {
     return CollectionModifier.add(-1, obj);
+  }
+
+  /**
+   * Allows to use {@link Collection#add(Object)}. This will unwrap the wrapper
+   *
+   * @param wrapper the wrapped object to be added
+   * @return the modifier to add the object
+   */
+  @NonNull
+  public static CollectionModifier add(@NonNull Wrapper<?> wrapper) {
+    return CollectionModifier.add(-1, wrapper);
+  }
+
+  /**
+   * Allows to use {@link List#add(int, Object)}.
+   *
+   * @param index the index to add the object
+   * @param wrapper the wrapped object to be added
+   * @return the modifier to add the object in an index
+   */
+  @NonNull
+  public static CollectionModifier add(int index, @NonNull Wrapper<?> wrapper) {
+    return new Add(index, wrapper.getHandle());
   }
 
   /**
@@ -58,16 +102,16 @@ public abstract class CollectionModifier implements Modifier {
    * @return the modifier to add the object in an index
    */
   @NonNull
-  public static CollectionModifier add(int index, @NonNull Object obj) {
+  public static CollectionModifier add(int index, Object obj) {
     return new Add(index, obj);
   }
 
   @Override
   public boolean modify(@NonNull WrappedField<?> field, @NonNull Object reference)
       throws IllegalAccessException, InvocationTargetException {
-    Object raw = field.getRaw(reference);
+    Object raw = field.provide(reference);
     if (raw instanceof Collection) {
-      return this.modify(field, reference, (Collection) raw);
+      return this.modify(field, reference, (Collection<?>) raw);
     }
     return false;
   }
@@ -90,9 +134,9 @@ public abstract class CollectionModifier implements Modifier {
   private static class Add extends CollectionModifier {
 
     private final int index;
-    @NonNull private final Object toAdd;
+    private final Object toAdd;
 
-    private Add(int index, @NonNull Object toAdd) {
+    private Add(int index, Object toAdd) {
       this.toAdd = toAdd;
       this.index = index;
     }

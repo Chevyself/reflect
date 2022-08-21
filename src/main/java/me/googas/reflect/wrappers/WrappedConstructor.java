@@ -42,8 +42,8 @@ public final class WrappedConstructor<T> extends LangWrapper<Constructor<T>> {
   public T invoke(Object... args)
       throws InvocationTargetException, InstantiationException, IllegalAccessException {
     T other = null;
-    if (this.reference != null) {
-      other = this.reference.newInstance(args);
+    if (this.handle != null) {
+      other = this.handle.newInstance(args);
     }
     return other;
   }
@@ -54,6 +54,6 @@ public final class WrappedConstructor<T> extends LangWrapper<Constructor<T>> {
    * @return the wrapped constructor
    */
   public Constructor<T> getConstructor() {
-    return reference;
+    return handle;
   }
 }
