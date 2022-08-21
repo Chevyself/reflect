@@ -14,9 +14,9 @@ import me.googas.reflect.util.ReflectUtil;
  * This class wraps a {@link Class} to use its methods checking if those can be executed and
  * returning objects without throwing errors.
  *
- * <p>The method {@link Class#forName(String)} would throw a {@link ClassNotFoundException} mean
- * while {@link WrappedClass#forName(String)} will just return an empty instance if that is the case
- * most of the methods declared in this class would return empty instances too
+ * <p>The method {@link Class#forName(String)} would throw a {@link ClassNotFoundException}
+ * meanwhile {@link WrappedClass#forName(String)} will just return an empty instance if that is the
+ * case most of the methods declared in this class would return empty instances too
  *
  * @param <O> the type of the class object
  */
@@ -68,11 +68,11 @@ public final class WrappedClass<O> extends LangWrapper<Class<O>> {
   @NonNull
   public WrappedConstructor<O> getConstructor(Class<?>... params) {
     Constructor<O> constructor = null;
-    if (this.hasConstructor(params)) {
-      try {
-        constructor = this.reference.getConstructor(params);
-      } catch (NoSuchMethodException e) {
-        throw new IllegalStateException("Constructor was not found even after check was true", e);
+    for (Constructor<?> referenceConstructor : this.reference.getConstructors()) {
+      if (this.compare(referenceConstructor, params)) {
+        //noinspection unchecked
+        constructor = (Constructor<O>) referenceConstructor;
+        break;
       }
     }
     return WrappedConstructor.of(constructor);
@@ -87,12 +87,10 @@ public final class WrappedClass<O> extends LangWrapper<Class<O>> {
   @NonNull
   public WrappedField<?> getField(@NonNull String name) {
     Field field = null;
-    if (this.hasField(null, name)) {
-      try {
-        field = this.reference.getField(name);
-      } catch (NoSuchFieldException e) {
-        throw new IllegalStateException("Field was not found even after check was true", e);
-      }
+    try {
+      field = this.reference.getField(name);
+    } catch (NoSuchFieldException e) {
+      // Field not found
     }
     return WrappedField.of(field);
   }
@@ -100,7 +98,7 @@ public final class WrappedClass<O> extends LangWrapper<Class<O>> {
   /**
    * Get the field matching the name.
    *
-   * @param fieldType the the class of the object that the field contains
+   * @param fieldType the class of the object that the field contains
    * @param name the name to match the field with
    * @return a {@link WrappedField} instance containing the field or empty if not found
    * @param <T> the type of the object that the field contains
@@ -108,12 +106,10 @@ public final class WrappedClass<O> extends LangWrapper<Class<O>> {
   @NonNull
   public <T> WrappedField<T> getField(@NonNull Class<T> fieldType, @NonNull String name) {
     Field field = null;
-    if (this.hasField(fieldType, name)) {
-      try {
-        field = this.reference.getField(name);
-      } catch (NoSuchFieldException e) {
-        throw new IllegalStateException("Field was not found even after check was true", e);
-      }
+    try {
+      field = this.reference.getField(name);
+    } catch (NoSuchFieldException e) {
+      // Field not found
     }
     return WrappedField.of(fieldType, field);
   }
@@ -127,12 +123,10 @@ public final class WrappedClass<O> extends LangWrapper<Class<O>> {
   @NonNull
   public WrappedField<?> getDeclaredField(@NonNull String name) {
     Field field = null;
-    if (this.hasDeclaredField(null, name)) {
-      try {
-        field = this.reference.getDeclaredField(name);
-      } catch (NoSuchFieldException e) {
-        throw new IllegalStateException("Field was not found even after check was true", e);
-      }
+    try {
+      field = this.reference.getDeclaredField(name);
+    } catch (NoSuchFieldException e) {
+      // Field not found
     }
     return WrappedField.of(field);
   }
@@ -140,7 +134,7 @@ public final class WrappedClass<O> extends LangWrapper<Class<O>> {
   /**
    * Get a declared field matching the name.
    *
-   * @param fieldType the the class of the object that the field contains
+   * @param fieldType the class of the object that the field contains
    * @param name the name to match the field with
    * @return a {@link WrappedField} instance containing the field or empty if not found
    * @param <T> the type of the object that the field contains
@@ -148,12 +142,10 @@ public final class WrappedClass<O> extends LangWrapper<Class<O>> {
   @NonNull
   public <T> WrappedField<T> getDeclaredField(@NonNull Class<T> fieldType, @NonNull String name) {
     Field field = null;
-    if (this.hasDeclaredField(fieldType, name)) {
-      try {
-        field = this.reference.getDeclaredField(name);
-      } catch (NoSuchFieldException e) {
-        throw new IllegalStateException("Field was not found even after check was true", e);
-      }
+    try {
+      field = this.reference.getDeclaredField(name);
+    } catch (NoSuchFieldException e) {
+      // Field not found
     }
     return WrappedField.of(fieldType, field);
   }
@@ -183,11 +175,10 @@ public final class WrappedClass<O> extends LangWrapper<Class<O>> {
   public <T> WrappedMethod<T> getMethod(
       Class<T> returnType, @NonNull String name, Class<?>... params) {
     Method method = null;
-    if (this.hasMethod(returnType, name, params)) {
-      try {
-        method = this.reference.getMethod(name, params);
-      } catch (NoSuchMethodException e) {
-        throw new IllegalStateException("Method was not found even after check was true", e);
+    for (Method referenceMethod : this.reference.getMethods()) {
+      if (this.compareMethods(returnType, name, referenceMethod, params)) {
+        method = referenceMethod;
+        break;
       }
     }
     return WrappedMethod.of(method, returnType);
@@ -218,11 +209,10 @@ public final class WrappedClass<O> extends LangWrapper<Class<O>> {
   public <T> WrappedMethod<T> getDeclaredMethod(
       Class<T> returnType, @NonNull String name, Class<?>... params) {
     Method method = null;
-    if (this.hasDeclaredMethod(returnType, name, params)) {
-      try {
-        method = this.reference.getDeclaredMethod(name, params);
-      } catch (NoSuchMethodException e) {
-        throw new IllegalStateException("Method was not found even after check was true", e);
+    for (Method referenceMethod : this.reference.getDeclaredMethods()) {
+      if (this.compareMethods(returnType, name, referenceMethod, params)) {
+        method = referenceMethod;
+        break;
       }
     }
     return WrappedMethod.of(method, returnType);
@@ -276,7 +266,7 @@ public final class WrappedClass<O> extends LangWrapper<Class<O>> {
   /**
    * Checks if a field with the given name exists in the class.
    *
-   * @param fieldType the the class of the object that the field contains
+   * @param fieldType the class of the object that the field contains
    * @param name the name of the field to find
    * @return true if the field is found false otherwise
    */
@@ -293,7 +283,7 @@ public final class WrappedClass<O> extends LangWrapper<Class<O>> {
   /**
    * Checks if a declared field with the given name exists in the class.
    *
-   * @param fieldType the the class of the object that the field contains
+   * @param fieldType the class of the object that the field contains
    * @param name the name of the field to find
    * @return true if the field is found false otherwise
    */
@@ -332,13 +322,24 @@ public final class WrappedClass<O> extends LangWrapper<Class<O>> {
   public boolean hasConstructor(Class<?>... params) {
     if (this.reference != null) {
       for (Constructor<?> constructor : this.reference.getConstructors()) {
-        Class<?>[] paramTypes = constructor.getParameterTypes();
-        if (ReflectUtil.compareParameters(paramTypes, params)) {
+        if (this.compare(constructor, params)) {
           return true;
         }
       }
     }
     return false;
+  }
+
+  /**
+   * Compares a constructor to an array of classes. This checks if the constructor has the same
+   * parameter types as the array
+   *
+   * @param constructor the constructor to be compared
+   * @param params the array to compare
+   * @return true if the parameter types of the constructor matches the classes of the array
+   */
+  private boolean compare(Constructor<?> constructor, Class<?>[] params) {
+    return ReflectUtil.compareParameters(constructor.getParameterTypes(), params);
   }
 
   /**
