@@ -20,6 +20,6 @@ public interface Modifier {
    * @throws IllegalAccessException if this Field object is enforcing Java language access control
    *     and the underlying field is either inaccessible or final.
    */
-  boolean modify(@NonNull WrappedField<?> field, @NonNull Object reference)
+  boolean modify(@NonNull WrappedField<?> field, Object reference)
       throws IllegalAccessException, InvocationTargetException;
 }
