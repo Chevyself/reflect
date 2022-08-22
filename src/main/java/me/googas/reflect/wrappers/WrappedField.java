@@ -50,15 +50,15 @@ public final class WrappedField<O> extends LangWrapper<Field> {
   /**
    * Get the value that is stored in the field for the parameter object.
    *
-   * @param obj the object to get the value of the field from
+   * @param instance the object to get the value of the field from
    * @return the object from the field
    * @throws IllegalAccessException if this Field object is enforcing Java language access control
    *     and the underlying field is inaccessible.
    */
-  public Object provide(@NonNull Object obj) throws IllegalAccessException {
+  public Object provide(@NonNull Object instance) throws IllegalAccessException {
     Object other = null;
     if (this.wrapped != null) {
-      other = this.wrapped.get(obj);
+      other = this.wrapped.get(instance);
     }
     return other;
   }
@@ -75,7 +75,7 @@ public final class WrappedField<O> extends LangWrapper<Field> {
   public O get(Object instance) throws IllegalAccessException {
     O other = null;
     if (this.wrapped != null && this.fieldType != null) {
-      other = this.fieldType.cast(this.provide(wrapped));
+      other = this.fieldType.cast(this.provide(instance));
     }
     return other;
   }
