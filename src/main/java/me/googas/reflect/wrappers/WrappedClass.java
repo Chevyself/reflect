@@ -68,7 +68,7 @@ public final class WrappedClass<O> extends LangWrapper<Class<O>> {
   @NonNull
   public WrappedConstructor<O> getConstructor(Class<?>... params) {
     Constructor<O> constructor = null;
-    for (Constructor<?> referenceConstructor : this.handle.getConstructors()) {
+    for (Constructor<?> referenceConstructor : this.wrapped.getConstructors()) {
       if (this.compare(referenceConstructor, params)) {
         //noinspection unchecked
         constructor = (Constructor<O>) referenceConstructor;
@@ -88,7 +88,7 @@ public final class WrappedClass<O> extends LangWrapper<Class<O>> {
   public WrappedField<?> getField(@NonNull String name) {
     Field field = null;
     try {
-      field = this.handle.getField(name);
+      field = this.wrapped.getField(name);
     } catch (NoSuchFieldException e) {
       // Field not found
     }
@@ -107,7 +107,7 @@ public final class WrappedClass<O> extends LangWrapper<Class<O>> {
   public <T> WrappedField<T> getField(@NonNull Class<T> fieldType, @NonNull String name) {
     Field field = null;
     try {
-      field = this.handle.getField(name);
+      field = this.wrapped.getField(name);
     } catch (NoSuchFieldException e) {
       // Field not found
     }
@@ -124,7 +124,7 @@ public final class WrappedClass<O> extends LangWrapper<Class<O>> {
   public WrappedField<?> getDeclaredField(@NonNull String name) {
     Field field = null;
     try {
-      field = this.handle.getDeclaredField(name);
+      field = this.wrapped.getDeclaredField(name);
     } catch (NoSuchFieldException e) {
       // Field not found
     }
@@ -143,7 +143,7 @@ public final class WrappedClass<O> extends LangWrapper<Class<O>> {
   public <T> WrappedField<T> getDeclaredField(@NonNull Class<T> fieldType, @NonNull String name) {
     Field field = null;
     try {
-      field = this.handle.getDeclaredField(name);
+      field = this.wrapped.getDeclaredField(name);
     } catch (NoSuchFieldException e) {
       // Field not found
     }
@@ -175,7 +175,7 @@ public final class WrappedClass<O> extends LangWrapper<Class<O>> {
   public <T> WrappedMethod<T> getMethod(
       Class<T> returnType, @NonNull String name, Class<?>... params) {
     Method method = null;
-    for (Method referenceMethod : this.handle.getMethods()) {
+    for (Method referenceMethod : this.wrapped.getMethods()) {
       if (this.compareMethods(returnType, name, referenceMethod, params)) {
         method = referenceMethod;
         break;
@@ -209,7 +209,7 @@ public final class WrappedClass<O> extends LangWrapper<Class<O>> {
   public <T> WrappedMethod<T> getDeclaredMethod(
       Class<T> returnType, @NonNull String name, Class<?>... params) {
     Method method = null;
-    for (Method referenceMethod : this.handle.getDeclaredMethods()) {
+    for (Method referenceMethod : this.wrapped.getDeclaredMethods()) {
       if (this.compareMethods(returnType, name, referenceMethod, params)) {
         method = referenceMethod;
         break;
@@ -227,8 +227,8 @@ public final class WrappedClass<O> extends LangWrapper<Class<O>> {
    * @return true if the method is found false otherwise
    */
   public boolean hasMethod(Class<?> returnType, @NonNull String name, Class<?>... params) {
-    if (this.handle != null) {
-      for (Method method : this.handle.getMethods()) {
+    if (this.wrapped != null) {
+      for (Method method : this.wrapped.getMethods()) {
         if (this.compareMethods(returnType, name, method, params)) return true;
       }
     }
@@ -244,8 +244,8 @@ public final class WrappedClass<O> extends LangWrapper<Class<O>> {
    * @return true if the method is found false otherwise
    */
   public boolean hasDeclaredMethod(Class<?> returnType, @NonNull String name, Class<?>... params) {
-    if (this.handle != null) {
-      for (Method method : this.handle.getDeclaredMethods()) {
+    if (this.wrapped != null) {
+      for (Method method : this.wrapped.getDeclaredMethods()) {
         if (this.compareMethods(returnType, name, method, params)) return true;
       }
     }
@@ -271,8 +271,8 @@ public final class WrappedClass<O> extends LangWrapper<Class<O>> {
    * @return true if the field is found false otherwise
    */
   public boolean hasField(Class<?> fieldType, @NonNull String name) {
-    if (this.handle != null) {
-      for (Field field : this.handle.getFields()) {
+    if (this.wrapped != null) {
+      for (Field field : this.wrapped.getFields()) {
         if (field.getName().equals(name)
             && (fieldType == null || fieldType.isAssignableFrom(field.getType()))) return true;
       }
@@ -288,8 +288,8 @@ public final class WrappedClass<O> extends LangWrapper<Class<O>> {
    * @return true if the field is found false otherwise
    */
   public boolean hasDeclaredField(Class<?> fieldType, @NonNull String name) {
-    if (this.handle != null) {
-      for (Field field : this.handle.getDeclaredFields()) {
+    if (this.wrapped != null) {
+      for (Field field : this.wrapped.getDeclaredFields()) {
         if (field.getName().equals(name)
             && (fieldType == null || fieldType.isAssignableFrom(field.getType()))) return true;
       }
@@ -320,8 +320,8 @@ public final class WrappedClass<O> extends LangWrapper<Class<O>> {
    * @return true if the constructor is found false otherwise
    */
   public boolean hasConstructor(Class<?>... params) {
-    if (this.handle != null) {
-      for (Constructor<?> constructor : this.handle.getConstructors()) {
+    if (this.wrapped != null) {
+      for (Constructor<?> constructor : this.wrapped.getConstructors()) {
         if (this.compare(constructor, params)) {
           return true;
         }
@@ -349,7 +349,7 @@ public final class WrappedClass<O> extends LangWrapper<Class<O>> {
    */
   @NonNull
   public List<WrappedMethod<?>> getMethods() {
-    return handle == null ? new ArrayList<>() : WrappedClass.wrap(this.handle.getMethods());
+    return wrapped == null ? new ArrayList<>() : WrappedClass.wrap(this.wrapped.getMethods());
   }
 
   /**
@@ -359,7 +359,7 @@ public final class WrappedClass<O> extends LangWrapper<Class<O>> {
    */
   @NonNull
   public List<WrappedField<?>> getFields() {
-    return this.handle == null ? new ArrayList<>() : WrappedClass.wrap(this.handle.getFields());
+    return this.wrapped == null ? new ArrayList<>() : WrappedClass.wrap(this.wrapped.getFields());
   }
 
   /**
@@ -369,9 +369,9 @@ public final class WrappedClass<O> extends LangWrapper<Class<O>> {
    */
   @NonNull
   public List<WrappedField<?>> getDeclaredFields() {
-    return this.handle == null
+    return this.wrapped == null
         ? new ArrayList<>()
-        : WrappedClass.wrap(this.handle.getDeclaredFields());
+        : WrappedClass.wrap(this.wrapped.getDeclaredFields());
   }
 
   /**
@@ -381,7 +381,7 @@ public final class WrappedClass<O> extends LangWrapper<Class<O>> {
    */
   @NonNull
   public Class<O> getClazz() {
-    return this.handle;
+    return this.wrapped;
   }
 
   @Override
@@ -389,18 +389,18 @@ public final class WrappedClass<O> extends LangWrapper<Class<O>> {
     if (this == o) return true;
     if (o == null || this.getClass() != o.getClass()) return false;
     WrappedClass<?> that = (WrappedClass<?>) o;
-    return Objects.equals(handle, that.handle);
+    return Objects.equals(wrapped, that.wrapped);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(handle);
+    return Objects.hash(wrapped);
   }
 
   @Override
   public String toString() {
     return new StringJoiner(", ", WrappedClass.class.getSimpleName() + "[", "]")
-        .add("clazz=" + handle)
+        .add("clazz=" + wrapped)
         .toString();
   }
 }

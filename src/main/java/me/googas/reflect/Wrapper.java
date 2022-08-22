@@ -24,26 +24,28 @@ public interface Wrapper<T> {
   /**
    * Get the wrapped object.
    *
-   * @deprecated use {@link #getHandle()}
+   * @deprecated use {@link #getWrapped()}
    * @return a {@link Optional} containing the nullable wrapped object
    */
   @NonNull
-  Optional<T> get();
+  default Optional<T> get() {
+    throw new UnsupportedOperationException("Deprecated");
+  }
 
   /**
    * Get the wrapped object.
    *
    * @return the wrapped objet
    */
-  T getHandle();
+  T getWrapped();
 
   /**
-   * Check if {@link #getHandle()} is not null.
+   * Check if {@link #getWrapped()} is not null.
    *
    * @return true if handle is not null
    */
   default boolean isPresent() {
-    return this.getHandle() != null;
+    return this.getWrapped() != null;
   }
 
   /**
@@ -53,5 +55,7 @@ public interface Wrapper<T> {
    * @param object the new wrapped object
    * @return this same instance
    */
-  Wrapper<T> set(T object);
+  default Wrapper<T> set(T object) {
+    throw new UnsupportedOperationException("Deprecated");
+  }
 }

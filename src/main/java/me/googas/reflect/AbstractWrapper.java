@@ -1,8 +1,7 @@
 package me.googas.reflect;
 
-import java.util.Optional;
+import java.util.Objects;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.Setter;
 
 /**
@@ -12,24 +11,36 @@ import lombok.Setter;
  */
 public class AbstractWrapper<T> implements SetterWrapper<T> {
 
-  @Getter @Setter private T handle;
+  @Getter @Setter protected T wrapped;
 
   /**
    * Wrap an object.
    *
-   * @param handle the object to be wrapped
+   * @param wrapped the object to be wrapped
    */
-  public AbstractWrapper(T handle) {
-    this.handle = handle;
+  public AbstractWrapper(T wrapped) {
+    this.wrapped = wrapped;
   }
 
   @Override
-  public @NonNull Optional<T> get() {
-    throw new UnsupportedOperationException("Deprecated");
+  public String toString() {
+    return "AbstractWrapper{" + "wrapped=" + wrapped + '}';
   }
 
   @Override
-  public Wrapper<T> set(T object) {
-    throw new UnsupportedOperationException("Deprecated");
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || this.getClass() != o.getClass()) {
+      return false;
+    }
+    AbstractWrapper<?> that = (AbstractWrapper<?>) o;
+    return Objects.equals(wrapped, that.wrapped);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(wrapped);
   }
 }

@@ -24,7 +24,7 @@ public abstract class SimpleWrapper<T> implements Wrapper<T> {
   }
 
   @Override
-  public T getHandle() {
+  public T getWrapped() {
     return reference;
   }
 

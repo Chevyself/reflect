@@ -12,5 +12,5 @@ public interface SetterWrapper<T> extends Wrapper<T> {
    *
    * @param object the new wrapped object
    */
-  void setHandle(T object);
+  void setWrapped(T object);
 }

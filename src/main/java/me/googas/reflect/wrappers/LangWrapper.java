@@ -13,16 +13,16 @@ import me.googas.reflect.Wrapper;
  */
 class LangWrapper<T> implements Wrapper<T> {
 
-  @Getter final T handle;
+  @Getter final T wrapped;
 
-  LangWrapper(T handle) {
-    this.handle = handle;
+  LangWrapper(T wrapped) {
+    this.wrapped = wrapped;
   }
 
   @Override
   @Deprecated
   public @NonNull Optional<T> get() {
-    return Optional.ofNullable(this.handle);
+    return Optional.ofNullable(this.wrapped);
   }
 
   @Override
@@ -36,11 +36,11 @@ class LangWrapper<T> implements Wrapper<T> {
     if (this == o) return true;
     if (o == null || this.getClass() != o.getClass()) return false;
     LangWrapper<?> that = (LangWrapper<?>) o;
-    return Objects.equals(handle, that.handle);
+    return Objects.equals(wrapped, that.wrapped);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(handle);
+    return Objects.hash(wrapped);
   }
 }

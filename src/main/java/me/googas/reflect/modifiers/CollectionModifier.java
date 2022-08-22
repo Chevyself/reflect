@@ -56,7 +56,7 @@ public abstract class CollectionModifier implements Modifier {
     return new AddAll(
         collection.stream()
             .filter(Wrapper::isPresent)
-            .map(Wrapper::getHandle)
+            .map(Wrapper::getWrapped)
             .collect(Collectors.toList()));
   }
 
@@ -91,7 +91,7 @@ public abstract class CollectionModifier implements Modifier {
    */
   @NonNull
   public static CollectionModifier add(int index, @NonNull Wrapper<?> wrapper) {
-    return new Add(index, wrapper.getHandle());
+    return new Add(index, wrapper.getWrapped());
   }
 
   /**
